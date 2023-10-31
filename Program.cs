@@ -87,18 +87,30 @@ namespace dtp7_contact_list
                     {
                         lastFileName = GetUserDirectory("address.lis");
                         LoadContactListFromFile(lastFileName);
+                        Console.WriteLine("Loaded");
                     }
                     else if (commandLine.Length == 2)
                     {
-                        lastFileName = GetUserDirectory(commandLine[1]); // commandLine[1] is the first argument
-                        // FIXME: Throws System.IO.FileNotFoundException: 
-                        LoadContactListFromFile(lastFileName);
+                        if (!string.IsNullOrEmpty(commandLine[1]))
+                        {
+                            Console.WriteLine($"could not found file {commandLine[1]}!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Loaded");
+                            lastFileName = GetUserDirectory(commandLine[1]); // commandLine[1] is the first argument
+                            LoadContactListFromFile(lastFileName);           // FIXME: Throws System.IO.FileNotFoundException: 
+                        }
                     }
-                    else
+                    else if (commandLine[0] == "")
                     {
                         Console.WriteLine("Usage:");
                         Console.WriteLine("  load                        - load contact list data from the file address.lis");
                         Console.WriteLine("  load /file/                 - load contact list data from the file");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Unknown command: '{commandLine[0]}'");
                     }
                 }
                 else if (commandLine[0] == "save")
@@ -223,11 +235,12 @@ namespace dtp7_contact_list
         {
             using (StreamReader infile = new StreamReader(lastFileName))
             {
-                string line;
-                while ((line = infile.ReadLine()) != null)
-                {
-                    LoadContact(line); // Also prints the line loaded
-                }
+            string line;
+                    while ((line = infile.ReadLine()) != null)
+                    {
+                        LoadContact(line); // Also prints the line loaded
+                    }
+                //TODO: Mängd personer "loadade"
             }
         }
 
