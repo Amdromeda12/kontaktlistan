@@ -10,17 +10,21 @@ namespace dtp7_contact_list
         class Person
         {
             public string persname, surname, birthdate;
-            public List<string> phone;
-            public List<string> address;
+            public List<string> phone = new List<string>();
+            public List<string> address = new List<string>();
             public Person() { }
             public Person(string persname, string surname)
             {
                 this.persname = persname; this.surname = surname;
             }
             public void AddPhone(string phone)
-                => this.phone.Add(phone);
+            {
+                this.phone.Add(phone);
+            }
             public void AddAddress(string address)
-                => this.address.Add(address);
+            {
+                this.address.Add(address);
+            }
             public string PhoneList
             {
                 get { return String.Join(";", phone); }
@@ -56,10 +60,11 @@ namespace dtp7_contact_list
                 {
                     if (commandLine.Length == 1)
                     {
-                        contactList = new List<Person>();
+                            contactList = new List<Person>();
                     }
                     else if (commandLine.Length == 3)
                     {
+                        if (!string.IsNullOrEmpty(commandLine[1]))
                         DeleteAllPersons(commandLine[1], commandLine[2]);
                     }
                     else
@@ -68,6 +73,7 @@ namespace dtp7_contact_list
                         Console.WriteLine("  delete                      - empty the contact list");
                         Console.WriteLine("  delete /persname/ /surname/ - delete a person");
                     }
+                    //TODO: lägg in om delete inte finns
                 }
                 else if (commandLine[0] == "list")
                 {
@@ -87,7 +93,6 @@ namespace dtp7_contact_list
                     {
                         lastFileName = GetUserDirectory("address.lis");
                         LoadContactListFromFile(lastFileName);
-                        Console.WriteLine("Loaded");
                     }
                     else if (commandLine.Length == 2)
                     {
@@ -97,9 +102,8 @@ namespace dtp7_contact_list
                         }
                         else
                         {
-                            Console.WriteLine("Loaded");
                             lastFileName = GetUserDirectory(commandLine[1]); // commandLine[1] is the first argument
-                            LoadContactListFromFile(lastFileName);           // FIXME: Throws System.IO.FileNotFoundException: 
+                            LoadContactListFromFile(lastFileName);
                         }
                     }
                     else if (commandLine[0] == "")
@@ -176,6 +180,7 @@ namespace dtp7_contact_list
                     }
                 }
                 if (found == -1) break; // breaks the do loop
+                Console.WriteLine("Removed");
                 contactList.RemoveAt(found);
             } while (true);
         }
@@ -208,10 +213,20 @@ namespace dtp7_contact_list
                 if (phone == "") break;
                 newPerson.AddPhone(phone);
             } while (true);
-            Console.Write("birth date: ");
-            string birthdate = Console.ReadLine();
-            newPerson.birthdate = birthdate;
-            contactList.Add(newPerson);
+            Console.Write("birth month: ");
+            int månad = Int32.Parse(Console.ReadLine());
+            Console.Write("birth day: ");
+            int dag = Int32.Parse(Console.ReadLine());
+            if (månad >= 1 && månad  <= 12 && dag >= 1 && dag <= 31)
+            {
+                Console.WriteLine(månad);
+                Console.WriteLine(dag);
+                string birthdate = Convert.ToString($"den {dag} i {månad}");
+                newPerson.birthdate = birthdate;
+                contactList.Add(newPerson);
+            }
+            else
+                Console.WriteLine("Orimlig månad eller år");
         }
 
         private static string GetUserDirectory(string path)
@@ -236,11 +251,14 @@ namespace dtp7_contact_list
             using (StreamReader infile = new StreamReader(lastFileName))
             {
             string line;
+                int mängd = 0;
                     while ((line = infile.ReadLine()) != null)
                     {
                         LoadContact(line); // Also prints the line loaded
+                        mängd++;
                     }
-                //TODO: Mängd personer "loadade"
+                Console.WriteLine($"{mängd} Loaded");
+
             }
         }
 
