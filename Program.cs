@@ -64,7 +64,6 @@ namespace dtp7_contact_list
                     }
                     else if (commandLine.Length == 3)
                     {
-                        if (!string.IsNullOrEmpty(commandLine[1]))
                         DeleteAllPersons(commandLine[1], commandLine[2]);
                     }
                     else
@@ -179,9 +178,14 @@ namespace dtp7_contact_list
                         found = i; break; // breaks the for loop
                     }
                 }
-                if (found == -1) break; // breaks the do loop
-                Console.WriteLine("Removed");
-                contactList.RemoveAt(found);
+                if (found == -1)
+                {
+                    Console.WriteLine($"There is no <{persname} {surname}> to remove");
+                    break;  // breaks the do loop
+                }
+                    Console.WriteLine("Removed");
+                    contactList.RemoveAt(found);
+                break;
             } while (true);
         }
 
